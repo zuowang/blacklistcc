@@ -37,6 +37,7 @@ type BlacklistChaincode struct {
 }
 
 var WritesPrefix = "#w"
+var ReadsPrefix = "#r"
 
 func (t *BlacklistChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	if len(args) == 0 {
@@ -45,6 +46,10 @@ func (t *BlacklistChaincode) Init(stub *shim.ChaincodeStub, function string, arg
 
 	for _, OrganizationId := range args {
 		err := stub.PutState(WritesPrefix + OrganizationId, []byte(strconv.Itoa(0)))
+		if err != nil {
+			return nil, err
+		}
+		err = stub.PutState(ReadsPrefix + OrganizationId, []byte(strconv.Itoa(0)))
 		if err != nil {
 			return nil, err
 		}
@@ -64,6 +69,8 @@ func (t *BlacklistChaincode) Invoke(stub *shim.ChaincodeStub, function string, a
 		return t.Write(stub, args)
 	} else if function == "delete" {
 		return t.Delete(stub, args)
+	} else if function == "pay" {
+		return t.Pay(stub, args)
 	}
 
 	return nil, errors.New("Received unknown function invocation")
@@ -142,6 +149,44 @@ func (t *BlacklistChaincode) Delete(stub *shim.ChaincodeStub, args []string) ([]
 	if err != nil {
 		return nil, err
 	}
+	return nil, nil
+}
+
+func (t *BlacklistChaincode) Pay(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	if len(args) != 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1")
+	}
+
+	UserId := args[0]
+	OwnerId := args[1]
+	OrganizationIdAsbytes, err := stub.GetCallerMetadata()
+	if err != nil {
+		return nil, err
+	}
+	OrganizationId := string(OrganizationIdAsbytes)
+	_, err = stub.GetState(UserId + OwnerId)
+	if err != nil {
+		return nil, err
+	}
+
+	err = stub.PutState(UserId + OwnerId + OrganizationId, []byte(""))
+	if err != nil {
+		return nil, err
+	}
+
+	OldReadsAsbytes, err := stub.GetState(ReadsPrefix + OwnerId)
+	if err != nil {
+		return nil, err
+	}
+	OldReads, err := strconv.Atoi(string(OldReadsAsbytes))
+	if err != nil {
+		return nil, err
+	}
+	err = stub.PutState(ReadsPrefix + OwnerId, []byte(strconv.Itoa(OldReads)))
+	if err != nil {
+		return nil, err
+	}
+
 	return nil, nil
 }
 

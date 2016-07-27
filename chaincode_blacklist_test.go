@@ -22,14 +22,12 @@ import (
 	"testing"
 	"time"
 
-	//"encoding/base64"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 
 	"github.com/hyperledger/fabric/core/chaincode"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	//"github.com/hyperledger/fabric/core/chaincode/shim/crypto/attr"
 	"github.com/hyperledger/fabric/core/container"
 	"github.com/hyperledger/fabric/core/crypto"
 	"github.com/hyperledger/fabric/core/ledger"
@@ -41,8 +39,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/grpclog"
-
-	//"reflect"
 )
 
 const (
@@ -111,7 +107,10 @@ func TestFreeFetch(t *testing.T) {
 	}
 
 	// idcUser upload a blacklist
-	if err := uploadBlacklist(idcUser, "idc", []string{"370284197901130819", "2016-07-12 16:37:21,2016-07-12", "210905197807210546", "2016-07-12 16:37:21,2016-07-12", "370205197405213513", "2016-07-12 16:37:21,2016-07-12"}); err != nil {
+	if err := uploadBlacklist(idcUser, "idc", []string{
+		"211011196307201779","B003003H8000,尉静,211011196307201779,15700213054,东海西路70号-17-3,2013-12-27,189,3,4",
+		"530624195603262537","B003003H8000,东弘策,530624195603262537,13500894938,人和路70号-4-8,2013-12-27,189,3,51",
+		"340823200711020669","B003003H8000,卓善,340823200711020669,13606102707,蒙阴大厦91号-2-3,2013-12-27,189,7,51"}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -147,12 +146,18 @@ func TestMultiItem(t *testing.T) {
 	}
 
 	// idcUser upload a blacklist
-	if err := uploadBlacklist(idcUser, "idc", []string{"370284197901130819", "2016-07-12 16:37:21,2016-07-12", "210905197807210546", "2016-07-12 16:37:21,2016-07-12", "370205197405213513", "2016-07-12 16:37:21,2016-07-12"}); err != nil {
+	if err := uploadBlacklist(idcUser, "idc", []string{
+		"211011196307201779","B003003H8000,尉静,211011196307201779,15700213054,东海西路70号-17-3,2013-12-27,189,3,4",
+		"530624195603262537","B003003H8000,东弘策,530624195603262537,13500894938,人和路70号-4-8,2013-12-27,189,3,51",
+		"340823200711020669","B003003H8000,卓善,340823200711020669,13606102707,蒙阴大厦91号-2-3,2013-12-27,189,7,51"}); err != nil {
 		t.Fatal(err)
 	}
 
 	// microloanUser upload a blacklist
-	if err := uploadBlacklist(microloanUser, "microloan", []string{"370284197901130819", "2016-07-12 16:37:21,2016-07-12", "372922198012224773", "2016-07-12 16:37:21,2016-07-12", "230803197906010035", "2016-07-12 16:37:21,2016-07-12"}); err != nil {
+	if err := uploadBlacklist(microloanUser, "microloan", []string{
+		"542325199907124901","B003003H8001,滑子发,542325199907124901,13603476697,新竹路115号-11-1,2013-12-27,189,7,21",
+		"630122198707118975","B003003H8001,仲思红,630122198707118975,15208073375,大港三街149号-17-9,2013-12-27,189,6,1",
+		"530723197702188473","B003003H8001,谭雄超,530723197702188473,13406148813,东阿街109号-6-8,2013-12-27,189,5,4"}); err != nil {
 		t.Fatal(err)
 	}
 
